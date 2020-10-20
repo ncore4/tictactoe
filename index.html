@@ -37,7 +37,7 @@
 
         .topBar {
             position: absolute;
-            
+
             width: 100%;
             top: 0px;
             left: 0px;
@@ -48,12 +48,28 @@
             -moz-box-shadow: 0px 0px 19px 4px rgba(0, 0, 0, 0.27);
             box-shadow: 0px 0px 19px 4px rgba(0, 0, 0, 0.27);
         }
+
+        .tic {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .tac {
+            color: red;
+            font-weight: bold;
+        }
+
+        .toe {
+            color: rgb(204, 204, 0);
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <div class="topBar">
-        <div>Player Turn: <span id="player"></span> </div>
+        <div> <span class="tic">Tic</span><span class="tac">tac</span><span class="toe">toe</span> Game | Player Turn:
+            <span id="player"></span> </div>
     </div>
     <div class="container">
         <div class="square" onclick="playTurn(this, 1)"></div>
@@ -76,7 +92,7 @@
     };
     let PosibilitiesToWin = ['159', '123', '147', '258', '357', '369', '456', '789'];
 
-    const assingPlayer= ()=> {
+    const assingPlayer = () => {
         turn = Math.floor(Math.random() * 2);
         document.getElementById('player').innerText = players[turn];
     }
@@ -90,31 +106,64 @@
         if (obj.innerText == '') {
             plays[players[turn]] = plays[players[turn]] + '' + place;
             obj.innerText = document.getElementById('player').innerText;
+        }else{
+            return;
         }
 
         if (plays.O.length > 1) {
-            console.log(plays);
             plays.X = plays.X.split('').sort().join('');
             plays.O = plays.O.split('').sort().join('');
 
-            if (PosibilitiesToWin.includes(plays.O) || PosibilitiesToWin.includes(plays.X)) {
-                document.getElementById('player').innerText = 'Player ' + players[turn] + ' wins!!!';
-                return;
-            }
+            players.forEach(player => {
+                availabeCombinations = getCombinations(plays[player]).map(e => {
+                    return e.split('').sort().join('')
+                }).reduce((acc, el) => ((acc.includes(el)) ? acc : [...acc, el]), []);
 
-            if(plays.O.length + plays.X.length >8){
+                availabeCombinations.forEach((combination) => {
+                    if (PosibilitiesToWin.includes(combination)) {
+                        document.getElementById('player').innerText = 'Player ' + players[turn] +
+                            ' wins!!!';
+                        return;
+                    }
+                });
+            });
+
+            if (plays.O.length + plays.X.length > 8 && document.getElementById('player').innerText.length < 2) {
                 document.getElementById('player').innerText = 'Tie!!! Nobody Wins';
                 return;
             }
+
         }
 
-        turn = (turn == 0) ? 1 : 0;
-        document.getElementById('player').innerText = players[turn];
+        if (document.getElementById('player').innerText.length < 2) {
+            turn = (turn == 0) ? 1 : 0;
+            document.getElementById('player').innerText = players[turn];
+        }
     }
 
-    const clean = ()=> {
+    const getCombinations = (PlayerPlays) => {
+
+        let combinations = [];
+
+        let posibilities = PlayerPlays.split('');
+        for (let i = 0; i < posibilities.length; i++) {
+            const a = posibilities[i];
+            for (let j = 0; j < posibilities.length; j++) {
+                const b = posibilities[j];
+                for (let h = 0; h < posibilities.length; h++) {
+                    const c = posibilities[h];
+                    if (c != b && c != a && a != b) {
+                        combinations.push(a + b + c);
+                    }
+                }
+            }
+        }
+        return combinations;
+    }
+
+    const clean = () => {
         let places = document.getElementsByClassName('square');
-        Array.prototype.forEach.call(places, (e)=> {
+        Array.prototype.forEach.call(places, (e) => {
             e.innerText = '';
         });
         plays.X = '';
