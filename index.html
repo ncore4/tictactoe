@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicTacToe Game Practice Development</title>
+    <style>
+        .container {
+            height: 300px;
+            width: 300px;
+            margin-left: -150px;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            margin-top: -150px;
+        }
+
+        .square {
+            height: 99px;
+            width: 99px;
+            float: left;
+            border-right: 1px blue solid;
+            border-bottom: 1px blue solid;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 80px;
+            text-align: center;
+        }
+
+        .squareOutLeft {
+            border-right: none;
+        }
+
+        .squareOutBottom {
+            border-bottom: none;
+        }
+
+        .topBar {
+            position: absolute;
+            
+            width: 100%;
+            top: 0px;
+            left: 0px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            padding: 10px;
+            font-size: 40px;
+            -webkit-box-shadow: 0px 0px 19px 4px rgba(0, 0, 0, 0.27);
+            -moz-box-shadow: 0px 0px 19px 4px rgba(0, 0, 0, 0.27);
+            box-shadow: 0px 0px 19px 4px rgba(0, 0, 0, 0.27);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topBar">
+        <div>Player Turn: <span id="player"></span> </div>
+    </div>
+    <div class="container">
+        <div class="square" onclick="playTurn(this, 1)"></div>
+        <div class="square" onclick="playTurn(this, 2)"></div>
+        <div class="square squareOutLeft" onclick="playTurn(this, 3)"></div>
+        <div class="square" onclick="playTurn(this, 4)"></div>
+        <div class="square" onclick="playTurn(this, 5)"></div>
+        <div class="square squareOutLeft" onclick="playTurn(this, 6)"></div>
+        <div class="square squareOutBottom" onclick="playTurn(this, 7)"></div>
+        <div class="square squareOutBottom" onclick="playTurn(this, 8)"></div>
+        <div class="square squareOutBottom squareOutLeft" onclick="playTurn(this, 9)"></div>
+    </div>
+</body>
+<script>
+    let players = ['X', 'O'];
+    let turn = 0;
+    let plays = {
+        X: '',
+        O: ''
+    };
+    let PosibilitiesToWin = ['159', '123', '147', '258', '357', '369', '456', '789'];
+
+    const assingPlayer= ()=> {
+        turn = Math.floor(Math.random() * 2);
+        document.getElementById('player').innerText = players[turn];
+    }
+
+    function playTurn(obj, place) {
+        if (document.getElementById('player').innerText.length > 2) {
+            clean();
+            return;
+        }
+
+        if (obj.innerText == '') {
+            plays[players[turn]] = plays[players[turn]] + '' + place;
+            obj.innerText = document.getElementById('player').innerText;
+        }
+
+        if (plays.O.length > 1) {
+            console.log(plays);
+            plays.X = plays.X.split('').sort().join('');
+            plays.O = plays.O.split('').sort().join('');
+
+            if (PosibilitiesToWin.includes(plays.O) || PosibilitiesToWin.includes(plays.X)) {
+                document.getElementById('player').innerText = 'Player ' + players[turn] + ' wins!!!';
+                return;
+            }
+
+            if(plays.O.length + plays.X.length >8){
+                document.getElementById('player').innerText = 'Tie!!! Nobody Wins';
+                return;
+            }
+        }
+
+        turn = (turn == 0) ? 1 : 0;
+        document.getElementById('player').innerText = players[turn];
+    }
+
+    const clean = ()=> {
+        let places = document.getElementsByClassName('square');
+        Array.prototype.forEach.call(places, (e)=> {
+            e.innerText = '';
+        });
+        plays.X = '';
+        plays.O = '';
+        assingPlayer();
+    }
+
+    (function () {
+        assingPlayer();
+    })();
+</script>
+
+</html>
